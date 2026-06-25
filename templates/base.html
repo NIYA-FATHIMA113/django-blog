@@ -1,4 +1,5 @@
-{% load static %}
+<!-- header part  -->
+{% load static%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,49 +7,57 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Django Blogs</title>
-
     <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
-    <link href="{% static 'CSS/blog.css' %}" rel="stylesheet">
-</head>
-
+    <link href="{% static 'CSS/blog.css'%}" rel="stylesheet">
+  </head>
 <body>
-<div class="container">
-    <header class="blog-header py-3">
-        <div class="row flex-nowrap justify-content-between align-items-center">
-            <div class="col-8 pt-1">
-                <a class="blog-header-logo text-dark" href="{% url 'home' %}">
-                    Django Blog
-                </a>
-            </div>
-
-            <div class="col-4 d-flex justify-content-end align-items-center">
-                <a class="btn btn-sm btn-warning" href="#">Login</a>
-                &nbsp;
-                <a class="btn btn-sm btn-outline-secondary" href="#">Register</a>
-            </div>
+    <div class="container">
+      <header class="blog-header py-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-12 col-md-3 pt-1 text-center text-md-left">
+            <a class="blog-header-logo text-dark" href="/">Django Blog</a>
+          </div>
+          <div class="col-12 col-md-5 my-2 my-md-0">
+            <form method="get" action="{% url 'search' %}">
+              <div class="input-group">
+                <input type="text" class="form-control" name="q" value="{{ keyword }}" list="header-blog-title-suggestions" placeholder="Search...">
+                <datalist id="header-blog-title-suggestions">
+                  {% for title in blog_suggestions %}
+                    <option value="{{ title }}">
+                  {% endfor %}
+                </datalist>
+                <span class="input-group-append">
+                  <button class="btn btn-primary" type="submit">Go!</button>
+                </span>
+              </div>
+            </form>
+          </div>
+          <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-end align-items-center">
+            <a class="btn btn-sm btn-warning" href="#">Login</a> &nbsp;
+            <a class="btn btn-sm btn-outline-secondary" href="#">Register</a>
+          </div>
         </div>
-    </header>
+      </header>
 
-    <div class="nav-scroller py-1 mb-2">
+      <div class="nav-scroller py-1 mb-2">
         <nav class="nav d-flex justify-content-between">
-            {% for cat in categories %}
-                <a class="p-2 text-muted" href="{% url 'posts_by_category' cat.id %}">
-                    {{ cat.category_name }}
-                </a>
-            {% endfor %}
+          {% for cat in categories %}
+          <a class="p-2 text-muted" href="{% url 'posts_by_category' cat.id %}">{{cat.category_name}}</a>
+          {% endfor %}
         </nav>
-    </div>
+      </div>
 
-    {% block content %}
-    {% endblock %}
+ <!-- main part -->
+
+{% block content%}
+
+{%endblock%}
 </div>
 
-<footer class="blog-footer text-center py-4">
-    <p>
-        Django Blog built with &hearts; by
-        <a href="#">Rathan Kumar</a>
-    </p>
+  <!-- footer part -->
+   <footer class="blog-footer">
+  <p>Django blog built with � by <a href="#">Niya fathima</a></p>
 </footer>
 </body>
 </html>

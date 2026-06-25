@@ -1,19 +1,15 @@
 {%extends 'base.html'%}
-{%block content%}
-    <!-- Hero Featured Blog -->
-
- 
-    <!-- Featured Posts -->
+{% block content %}
 
     <h3 class="text-uppercase text-warning mb-4"
         style="letter-spacing:2px;">
-        Category-{{category}}
+        Search Term-{{keyword}}
     </h3>
     
 
     <div class="row mb-5">
-        {% if posts%}
-        {% for post in posts %}
+        {% if blogs%}
+        {% for i in blogs %}
             
 
                 <div class="col-md-6">
@@ -22,16 +18,16 @@
 
                         <div class="card-body">
 
-                            <h3><a href="{% url 'blogs' post.slug %}" class="text-dark">{{ post.title }}</a></h3>
+                            <h3><a href="{% url 'blogs' i.slug %}" class="text-dark">{{ i.title }}</a></h3>
 
                             <small class="text-muted">
-                                {{ post.created_at|timesince }}
+                                {{ i.created_at|timesince }}
                                 ago |
-                                {{ post.author }}
+                                {{ i.author }}
                             </small>
 
                             <p class="card-text mt-2">
-                                {{ post.short_description|truncatewords:25 }}
+                                {{ i.short_description|truncatewords:25 }}
                             </p>
 
                         </div>
@@ -48,7 +44,4 @@
         
 
     </div>
-
-</div>
-
-{%endblock%}
+{% endblock %}
