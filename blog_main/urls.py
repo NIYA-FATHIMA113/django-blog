@@ -16,6 +16,8 @@ Including another URLconf
 """
 
 from django.conf import settings
+
+import dashboards
 from . import views
 from django.contrib import admin
 from django.urls import include, path
@@ -30,7 +32,7 @@ urlpatterns = [
     path('login/',views.login,name='login'),
     path('logout/',views.logout,name='logout'),
         
-    path('blogSs/<slug:slug>/',Blogsview.blogs,name='blogs')
-    
+    path('blogSs/<slug:slug>/',Blogsview.blogs,name='blogs'),
+    path('dashboard/',include('dashboards.urls')),
     
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
