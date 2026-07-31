@@ -13,16 +13,12 @@
       {{ single_blog.category }}
     </span>
 
-
-
     {% if single_blog.featured_image %}
       <img
-    src="{{ single_blog.featured_image.url }}"
-    class="img-fluid rounded shadow my-4"
-    style="width: 100%; height: 400px; object-fit: cover;"
-    alt="{{ single_blog.title }}">
-{% endif %}
-
+        src="{{ single_blog.featured_image.url }}"
+        class="img-fluid my-4"
+        alt="{{ single_blog.title }}">
+    {% endif %}
 
     <p>
       {{ single_blog.blog_body }}
