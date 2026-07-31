@@ -142,9 +142,19 @@ STATICFILES_DIRS = [
     BASE_DIR / 'blog_main' / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR/'media'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 cloudinary.config(
@@ -154,4 +164,3 @@ cloudinary.config(
     secure=True,
 )
 
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
