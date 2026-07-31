@@ -2,93 +2,112 @@
 
 {% block content %}
 <div class="row mt-5">
-  <div class="col-md-8 blog-main">
-    <h1 class="blog-post-title">{{ single_blog.title }}</h1>
 
-    <p class="text-muted mb-2">
-      Posted on {{ single_blog.created_at|date:"F d, Y" }} by {{ single_blog.author }}
-    </p>
+    <div class="col-md-8">
 
-    <span class="badge badge-primary mb-4">
-      {{ single_blog.category }}
-    </span>
+        <h1 class="blog-post-title">{{ single_blog.title }}</h1>
 
-    {% if single_blog.featured_image %}
-  <img
-    src="{{ single_blog.featured_image.url }}"
-    class="blog-image my-4 shadow"
-    alt="{{ single_blog.title }}">
-{% endif %}
+        <p class="text-muted">
+            Posted on {{ single_blog.created_at|date:"F d, Y" }} by {{ single_blog.author }}
+        </p>
 
-
-
-    <p>
-      {{ single_blog.blog_body }}
-    </p>
-    <h4>Comments ({{comment_count}})</h4>
-    {% if comments%}
-      {% for comment in comments%}
-        <div class="card mt-1">
-          <div class="card-body">
-            <p class="card-text mb-0">
-              {{comment}}
-            </p>
-            <span>
-              <small>
-                By {{comment.user}}
-              </small>
-              <small>| {{comment.created_at | timesince}} ago</small>
-            </span>
-          </div>
-
+        <div class="mb-3">
+            <a href="{% url 'posts_by_category' single_blog.category.id %}"
+               class="badge badge-primary">
+                {{ single_blog.category }}
+            </a>
         </div>
-      {%endfor%}
-    {%else%}
-    No comments yet
-    {%endif%}
-    <br>
-    <div class="form_group">
-      {%if user.is_authenticated%}
-      <form action="" method="POST">
-        {% csrf_token %}
-        <textarea name="comment" cols="30" rows="10" placeholder="Write your comment" class="form-control"></textarea>
-        <input type="submit" value="Submit" class="btn btn-primary mt-2">
-        
-      </form>
-      {%else%}
-      <p>Please <span><a href="{%url 'login' %}">login</a></span> to write a comment!</p>
-      {%endif%}
-    </div>
-  </div>
 
-  <aside class="col-md-4 blog-sidebar">
-    <div class="card mb-4">
-      <div class="card-body">
-        <h4 class="font-italic mb-4">Categories</h4>
-        <div class="row">
-          {% for category in categories %}
-            <div class="col-6">
-              <a href="{% url 'posts_by_category' category.id %}">
-                {{ category.category_name }}
-              </a>
+        {% if single_blog.featured_image %}
+        <img
+            src="{{ single_blog.featured_image.url }}"
+            alt="{{ single_blog.title }}"
+            class="img-fluid rounded shadow d-block w-100 mb-4"
+            style="max-height:500px; object-fit:cover;">
+        {% endif %}
+
+        <p>{{ single_blog.blog_body }}</p>
+
+        <h4>Comments ({{ comment_count }})</h4>
+
+        {% if comments %}
+            {% for comment in comments %}
+            <div class="card mt-2">
+                <div class="card-body">
+                    <p class="card-text mb-0">{{ comment.comment }}</p>
+
+                    <small>
+                        By {{ comment.user }} |
+                        {{ comment.created_at|timesince }} ago
+                    </small>
+                </div>
             </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-    {% if social_links %}
-    <div class="card mb-4">
-      <div class="card-body">
-        <h4 class="font-italic">Follow Us</h4>
-        <ol class="list-unstyled">
-            {% for i in social_links%}
-            <li><a href="{{i.link}}" target="_blank">{{i.platform}}</a></li>
             {% endfor %}
-          </ol>
-        
-      </div>
+        {% else %}
+            <p>No comments yet.</p>
+        {% endif %}
+
+        <br>
+
+        {% if user.is_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            <textarea
+                name="comment"
+                rows="5"
+                class="form-control"
+                placeholder="Write your comment"></textarea>
+
+            <button class="btn btn-primary mt-2">
+                Submit
+            </button>
+        </form>
+        {% else %}
+        <p>Please <a href="{% url 'login' %}">Login</a> to write a comment.</p>
+        {% endif %}
+
     </div>
-    {%endif%}
-  </aside>
+
+    <aside class="col-md-4">
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>Categories</h4>
+
+                <div class="row">
+                    {% for category in categories %}
+                    <div class="col-6">
+                        <a href="{% url 'posts_by_category' category.id %}">
+                            {{ category.category_name }}
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+
+        {% if social_links %}
+        <div class="card">
+            <div class="card-body">
+
+                <h4>Follow Us</h4>
+
+                <ul class="list-unstyled">
+                    {% for i in social_links %}
+                    <li>
+                        <a href="{{ i.link }}" target="_blank">
+                            {{ i.platform }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+        {% endif %}
+
+    </aside>
+
 </div>
 {% endblock %}
