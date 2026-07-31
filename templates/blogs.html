@@ -14,11 +14,13 @@
     </span>
 
     {% if single_blog.featured_image %}
-      <img
-        src="{{ single_blog.featured_image.url }}"
-        class="img-fluid my-4"
-        alt="{{ single_blog.title }}">
-    {% endif %}
+  <img
+    src="{{ single_blog.featured_image.url }}"
+    class="blog-image my-4 shadow"
+    alt="{{ single_blog.title }}">
+{% endif %}
+
+
 
     <p>
       {{ single_blog.blog_body }}
