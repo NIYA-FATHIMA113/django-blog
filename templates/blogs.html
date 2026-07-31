@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="row mt-5">
 
-    <div class="col-md-8">
+    <!-- Blog Content -->
+    <div class="col-md-8 blog-main">
 
         <h1 class="blog-post-title">{{ single_blog.title }}</h1>
 
-        <p class="text-muted">
+        <p class="text-muted mb-2">
             Posted on {{ single_blog.created_at|date:"F d, Y" }} by {{ single_blog.author }}
         </p>
 
@@ -19,68 +21,90 @@
         </div>
 
         {% if single_blog.featured_image %}
-        <img
-            src="{{ single_blog.featured_image.url }}"
-            alt="{{ single_blog.title }}"
-            class="img-fluid rounded shadow d-block w-100 mb-4"
-            style="max-height:500px; object-fit:cover;">
+            <img
+                src="{{ single_blog.featured_image.url }}"
+                alt="{{ single_blog.title }}"
+                class="img-fluid w-100 rounded shadow mb-4"
+                style="height:400px; object-fit:cover;">
         {% endif %}
 
-        <p>{{ single_blog.blog_body }}</p>
+        <p class="text-justify">
+            {{ single_blog.blog_body }}
+        </p>
 
-        <h4>Comments ({{ comment_count }})</h4>
+        <hr>
+
+        <h4 class="mb-3">
+            Comments ({{ comment_count }})
+        </h4>
 
         {% if comments %}
             {% for comment in comments %}
-            <div class="card mt-2">
-                <div class="card-body">
-                    <p class="card-text mb-0">{{ comment.comment }}</p>
+                <div class="card mb-3">
+                    <div class="card-body">
 
-                    <small>
-                        By {{ comment.user }} |
-                        {{ comment.created_at|timesince }} ago
-                    </small>
+                        <p class="card-text mb-2">
+                            {{ comment.comment }}
+                        </p>
+
+                        <small class="text-muted">
+                            By {{ comment.user }} |
+                            {{ comment.created_at|timesince }} ago
+                        </small>
+
+                    </div>
                 </div>
-            </div>
             {% endfor %}
         {% else %}
             <p>No comments yet.</p>
         {% endif %}
 
-        <br>
+        <hr>
 
         {% if user.is_authenticated %}
-        <form method="POST">
-            {% csrf_token %}
-            <textarea
-                name="comment"
-                rows="5"
-                class="form-control"
-                placeholder="Write your comment"></textarea>
+            <form method="POST">
+                {% csrf_token %}
 
-            <button class="btn btn-primary mt-2">
-                Submit
-            </button>
-        </form>
+                <div class="form-group">
+                    <textarea
+                        name="comment"
+                        rows="5"
+                        class="form-control"
+                        placeholder="Write your comment"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Submit Comment
+                </button>
+
+            </form>
         {% else %}
-        <p>Please <a href="{% url 'login' %}">Login</a> to write a comment.</p>
+            <p>
+                Please
+                <a href="{% url 'login' %}">Login</a>
+                to write a comment.
+            </p>
         {% endif %}
 
     </div>
 
-    <aside class="col-md-4">
+    <!-- Sidebar -->
+    <aside class="col-md-4 blog-sidebar">
 
         <div class="card mb-4">
             <div class="card-body">
-                <h4>Categories</h4>
+
+                <h4 class="font-italic mb-4">
+                    Categories
+                </h4>
 
                 <div class="row">
                     {% for category in categories %}
-                    <div class="col-6">
-                        <a href="{% url 'posts_by_category' category.id %}">
-                            {{ category.category_name }}
-                        </a>
-                    </div>
+                        <div class="col-6 mb-2">
+                            <a href="{% url 'posts_by_category' category.id %}">
+                                {{ category.category_name }}
+                            </a>
+                        </div>
                     {% endfor %}
                 </div>
 
@@ -91,15 +115,17 @@
         <div class="card">
             <div class="card-body">
 
-                <h4>Follow Us</h4>
+                <h4 class="font-italic mb-4">
+                    Follow Us
+                </h4>
 
-                <ul class="list-unstyled">
+                <ul class="list-unstyled mb-0">
                     {% for i in social_links %}
-                    <li>
-                        <a href="{{ i.link }}" target="_blank">
-                            {{ i.platform }}
-                        </a>
-                    </li>
+                        <li class="mb-2">
+                            <a href="{{ i.link }}" target="_blank">
+                                {{ i.platform }}
+                            </a>
+                        </li>
                     {% endfor %}
                 </ul>
 
@@ -110,4 +136,5 @@
     </aside>
 
 </div>
+
 {% endblock %}
