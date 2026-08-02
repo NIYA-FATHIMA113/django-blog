@@ -1,47 +1,80 @@
-{%extends 'base.html'%}
+{% extends 'base.html' %}
+
 {% block content %}
 
-    <h3 class="text-uppercase text-warning mb-4"
-        style="letter-spacing:2px;">
-        Search Term-{{keyword}}
-    </h3>
-    
-
-    <div class="row mb-5">
-        {% if blogs%}
-        {% for i in blogs %}
-            
-
-                <div class="col-md-6">
-
-                    <div class="card border-0 mb-4">
-
-                        <div class="card-body">
-
-                            <h3><a href="{% url 'blogs' i.slug %}" class="text-dark">{{ i.title }}</a></h3>
-
-                            <small class="text-muted">
-                                {{ i.created_at|timesince }}
-                                ago |
-                                {{ i.author }}
-                            </small>
-
-                            <p class="card-text mt-2">
-                                {{ i.short_description|truncatewords:25 }}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-           
-        {% endfor %}
-        {%else%}
-        <p>no post found</p>
-        {%endif%}
-        
-
+<section class="page-header" data-aos="fade-up">
+    <div class="page-header-icon">
+        <i class="bi bi-search"></i>
     </div>
+    <div class="page-header-content">
+        <span class="page-header-label">Search results</span>
+        <h1 class="page-header-title">
+            {% if keyword %}
+                "{{ keyword }}"
+            {% else %}
+                All results
+            {% endif %}
+        </h1>
+        {% if blogs %}
+        <p class="page-header-meta">
+            {{ blogs|length }} article{{ blogs|length|pluralize }} found
+        </p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="home-section" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4">
+        {% if blogs %}
+            {% for i in blogs %}
+            <div class="col-md-6">
+                <article class="blog-card blog-card-featured">
+                    <a href="{% url 'blogs' i.slug %}" class="blog-card-image-link">
+                        {% if i.featured_image %}
+                        <div class="blog-card-image" style="background-image: url('{{ i.featured_image.url }}');"></div>
+                        {% else %}
+                        <div class="blog-card-image blog-card-image-fallback"></div>
+                        {% endif %}
+                    </a>
+                    <div class="blog-card-body">
+                        <a href="{% url 'posts_by_category' i.category.id %}" class="post-category">
+                            {{ i.category.category_name }}
+                        </a>
+                        <h3 class="blog-card-title">
+                            <a href="{% url 'blogs' i.slug %}">{{ i.title }}</a>
+                        </h3>
+                        <div class="blog-card-meta">
+                            <span><i class="bi bi-clock me-1"></i>{{ i.created_at|timesince }} ago</span>
+                            <span class="meta-separator">·</span>
+                            <span><i class="bi bi-person me-1"></i>{{ i.author }}</span>
+                        </div>
+                        <p class="blog-card-excerpt">{{ i.short_description|truncatewords:25 }}</p>
+                        <a href="{% url 'blogs' i.slug %}" class="blog-card-read-more">
+                            Read more <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="empty-state">
+                <i class="bi bi-search"></i>
+                <h4>No posts found</h4>
+                <p>
+                    {% if keyword %}
+                        We couldn't find any articles matching "{{ keyword }}". Try a different search term.
+                    {% else %}
+                        Enter a search term to find articles.
+                    {% endif %}
+                </p>
+                <a href="/" class="btn btn-primary site-btn mt-2">
+                    <i class="bi bi-house-door me-1"></i>Back to Home
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
 {% endblock %}
