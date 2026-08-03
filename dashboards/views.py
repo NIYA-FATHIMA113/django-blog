@@ -11,6 +11,22 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
 from dashboards.forms import AddUserForm, CategoryForm,BlogPostForm, EditUserForm
+
+
+def unique_blog_slug(title, post_id=None):
+    """Return a URL-safe slug that does not clash with another blog post."""
+    base_slug = slugify(title) or 'post'
+    slug = base_slug
+    suffix = 2
+
+    matching_posts = Blog.objects.exclude(pk=post_id) if post_id else Blog.objects.all()
+    while matching_posts.filter(slug=slug).exists():
+        slug = f'{base_slug}-{suffix}'
+        suffix += 1
+
+    return slug
+
+
 # Create your views here.
 @login_required(login_url='login')
 def dashboard(request):
@@ -73,11 +89,8 @@ def add_post(request):
         if form.is_valid():
             post=form.save(commit=False) #temporarily saving the form
             post.author=request.user
-            
+            post.slug = unique_blog_slug(form.cleaned_data['title'])
             post.save()
-            title=form.cleaned_data['title']
-            post.slug=slugify(title)
-            post.save
             return redirect('posts')
         
             
@@ -97,8 +110,7 @@ def edit_post(request, pk):
 
         if form.is_valid():
             post = form.save()
-            title = form.cleaned_data['title']
-            post.slug = slugify(title) + '-' + str(post.id)
+            post.slug = unique_blog_slug(form.cleaned_data['title'], post.id)
             post.save()
             return redirect('posts')
         else:
