@@ -99,7 +99,7 @@ database_url = os.environ.get("DATABASE_URL")
 IS_LOCAL_DEVELOPMENT = not bool(database_url)
 if database_url:
     DATABASES = {
-        "default": dj_database_url.config(default=database_url)
+        "default": dj_database_url.parse(database_url)
     }
 else:
     # Use the checked-in local database when a hosted database is not configured.
