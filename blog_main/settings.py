@@ -97,6 +97,7 @@ WSGI_APPLICATION = 'blog_main.wsgi.application'
 
 database_url = os.environ.get("DATABASE_URL")
 IS_LOCAL_DEVELOPMENT = not bool(database_url)
+print("DATABASE_URL =", repr(database_url))
 if database_url:
     DATABASES = {
         "default": dj_database_url.parse(database_url)
