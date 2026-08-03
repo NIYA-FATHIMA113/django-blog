@@ -1,15 +1,27 @@
 
-<div class="col-md-3">
-        <div class="nav flex-column nav-pills bg-light">
-            <a href="{% url 'dashboard' %}" class="nav-link text-dark {% if request.resolver_match.url_name == 'dashboard' %}bg-warning{% endif %}">Dashboard</a>
-
-
-            {%if perms.auth.view_user%}
-            <a href="{% url 'users' %}" class="nav-link text-dark {% if request.resolver_match.url_name == 'users' %}bg-warning{% endif %}">Users</a>
-            {%endif%}
-            <a href="{% url 'categories' %}" class="nav-link text-dark {% if request.resolver_match.url_name == 'categories' %}bg-warning{% endif %}">Categories</a>
-            
-            <a href="{%url 'posts'%}" class="nav-link text-dark {% if request.resolver_match.url_name == 'posts' %}bg-warning{% endif %} ">Posts</a>
-            <a href="" class="nav-link text-dark ">Logout</a>
+<aside class="col-lg-3 dashboard-sidebar-wrap">
+    <nav class="dashboard-sidebar" aria-label="Dashboard navigation">
+        <div class="dashboard-sidebar-brand">
+            <span class="dashboard-sidebar-mark"><i class="fa fa-th-large"></i></span>
+            <span>Workspace</span>
         </div>
-    </div>
+        <p class="dashboard-sidebar-label">Manage</p>
+        <a href="{% url 'dashboard' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'dashboard' %}is-active{% endif %}">
+            <i class="fa fa-home"></i><span>Overview</span>
+        </a>
+        {% if perms.auth.view_user %}
+        <a href="{% url 'users' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'users' %}is-active{% endif %}">
+            <i class="fa fa-users"></i><span>Users</span>
+        </a>
+        {% endif %}
+        <a href="{% url 'categories' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'categories' %}is-active{% endif %}">
+            <i class="fa fa-folder-o"></i><span>Categories</span>
+        </a>
+        <a href="{% url 'posts' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'posts' %}is-active{% endif %}">
+            <i class="fa fa-file-text-o"></i><span>Posts</span>
+        </a>
+        <div class="dashboard-sidebar-footer">
+            <a href="{% url 'logout' %}" class="dashboard-nav-link dashboard-logout"><i class="fa fa-sign-out"></i><span>Log out</span></a>
+        </div>
+    </nav>
+</aside>

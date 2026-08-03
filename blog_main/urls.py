@@ -22,6 +22,7 @@ from . import views
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
+from django.views.static import serve
 from blogs import views as Blogsview
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,4 +36,12 @@ urlpatterns = [
     path('blogSs/<slug:slug>/',Blogsview.blogs,name='blogs'),
     path('dashboard/',include('dashboards.urls')),
     
-]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+]
+
+# The project uses local media while no hosted database is configured.
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+elif settings.IS_LOCAL_DEVELOPMENT:
+    urlpatterns += [
+        path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]

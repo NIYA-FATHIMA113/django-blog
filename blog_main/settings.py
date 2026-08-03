@@ -12,9 +12,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
-
+import dj_database_url
 import cloudinary
-
+from dotenv import load_dotenv
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -94,13 +95,20 @@ WSGI_APPLICATION = 'blog_main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+database_url = os.environ.get("DATABASE_URL")
+IS_LOCAL_DEVELOPMENT = not bool(database_url)
+if database_url:
+    DATABASES = {
+        "default": dj_database_url.config(default=database_url)
     }
-}
-
+else:
+    # Use the checked-in local database when a hosted database is not configured.
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -146,9 +154,21 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR/'media'
 
+cloudinary_configured = all(
+    os.environ.get(key)
+    for key in ("CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET")
+)
+# Local development should serve the images saved in MEDIA_ROOT. Cloudinary remains
+# the media backend when a hosted database (and Cloudinary credentials) is configured.
+use_cloudinary_storage = cloudinary_configured and not IS_LOCAL_DEVELOPMENT
+
 STORAGES = {
     "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        "BACKEND": (
+            "cloudinary_storage.storage.MediaCloudinaryStorage"
+            if use_cloudinary_storage
+            else "django.core.files.storage.FileSystemStorage"
+        ),
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",

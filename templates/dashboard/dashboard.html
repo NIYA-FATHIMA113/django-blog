@@ -1,30 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    <!-- Left Sidebar -->
+<div class="dashboard-shell row">
     {% include 'dashboard/sidebar.html' %}
-
-    <!-- Right Sidebar -->
-    <div class="col-md-9">
-        <span>Logged in as <b>{{user}}</b></span>
-        <div class="row">
-            <div class="col">
-                <div class="card border-defsault mb-3"></div>
-                <div class="card-header text-center text-uppercase font-weight-bold">All Categories</div>
-                <div class="card-body text-dark">
-                    <h5 class="card-title text-center">{{category_count}}</h5>
-                </div>
+    <main class="col-lg-9 dashboard-main">
+        <div class="dashboard-page-heading">
+            <div>
+                <p class="dashboard-eyebrow">Overview</p>
+                <h1>Welcome back, {{ user.username }}</h1>
+                <p class="dashboard-subtitle">Here’s a quick look at your blog workspace.</p>
             </div>
+            <span class="dashboard-user-chip"><i class="fa fa-user-circle-o"></i> {{ user }}</span>
+        </div>
 
-            <div class="col">
-                <div class="card border-default mb-3"></div>
-                <div class="card-header text-center text-uppercase font-weight-bold">All Posts</div>
-                <div class="card-body text-dark">
-                    <h5 class="card-title text-center">{{blogs_count}}</h5>
-                </div>
+        <div class="row dashboard-stats">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+                <a class="dashboard-stat-card" href="{% url 'categories' %}">
+                    <span class="dashboard-stat-icon dashboard-stat-icon-violet"><i class="fa fa-folder-o"></i></span>
+                    <span class="dashboard-stat-copy"><span class="dashboard-stat-label">Categories</span><strong>{{ category_count }}</strong><small>Organize your content</small></span>
+                    <i class="fa fa-arrow-right dashboard-stat-arrow"></i>
+                </a>
+            </div>
+            <div class="col-sm-6">
+                <a class="dashboard-stat-card" href="{% url 'posts' %}">
+                    <span class="dashboard-stat-icon dashboard-stat-icon-blue"><i class="fa fa-file-text-o"></i></span>
+                    <span class="dashboard-stat-copy"><span class="dashboard-stat-label">Posts</span><strong>{{ blogs_count }}</strong><small>Stories in your library</small></span>
+                    <i class="fa fa-arrow-right dashboard-stat-arrow"></i>
+                </a>
             </div>
         </div>
-    </div>
+
+        <section class="dashboard-welcome-card">
+            <div><span class="dashboard-welcome-icon"><i class="fa fa-pencil"></i></span></div>
+            <div><h2>Ready to share something new?</h2><p>Create and manage posts from one calm, focused workspace.</p></div>
+            <a href="{% url 'add_post' %}" class="btn dashboard-primary-btn">Create post <i class="fa fa-arrow-right"></i></a>
+        </section>
+    </main>
 </div>
 {% endblock %}
