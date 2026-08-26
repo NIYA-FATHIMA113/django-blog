@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class About(models.Model):
@@ -33,4 +34,12 @@ class SocialLink(models.Model):
             return self.platform
     class Meta:
               verbose_name_plural='Follow us'   
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    photo = models.ImageField(upload_to='profiles/', blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.username} profile'
     

@@ -4,7 +4,6 @@ from contextlib import redirect_stderr
 from django.contrib import auth
 from django.shortcuts import redirect, render
 
-from assignments.models import About
 from blog_main.forms import Registration
 from blogs.models import Blog, Category
 from django.contrib.auth.forms import AuthenticationForm
@@ -17,15 +16,10 @@ def home(request):
     if query:
         posts = Blog.objects.filter(status='Published', title__icontains=query).order_by('-updated_at')
         featured_posts = Blog.objects.none()
-    try:
-        about=About.objects.get()
-    except:
-        about=None
     context={
         
         'featured_posts':featured_posts,
         'posts':posts,
-        'about':about,
         'query':query,
     }
     return render(request,'home.html',context)

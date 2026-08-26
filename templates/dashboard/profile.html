@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="dashboard-shell row">
+    {% include 'dashboard/sidebar.html' %}
+    <main class="col-lg-9 dashboard-main">
+        <div class="dashboard-page-heading">
+            <div>
+                <p class="dashboard-eyebrow">Account</p>
+                <h1>Your profile</h1>
+                <p class="dashboard-subtitle">Manage your personal details and profile photo.</p>
+            </div>
+        </div>
+
+        <section class="profile-identity mb-4">
+            {% if profile_user.profile.photo %}
+                <img src="{{ profile_user.profile.photo.url }}" alt="{{ profile_user.username }}" class="profile-avatar">
+            {% else %}
+                <span class="profile-avatar profile-avatar-placeholder"><i class="fa fa-user"></i></span>
+            {% endif %}
+            <div class="profile-identity-copy">
+                <h2>{{ profile_user.get_full_name|default:profile_user.username }}</h2>
+                <p>@{{ profile_user.username }}</p>
+                <small>Member since {{ profile_user.date_joined|date:"F d, Y" }}</small>
+            </div>
+        </section>
+
+        <form method="post" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+            <div class="profile-form-section">
+                <div class="profile-form-heading">
+                    <h2>Personal details</h2>
+                    <p>Keep your account information up to date.</p>
+                </div>
+                {{ user_form|crispy }}
+            </div>
+            <div class="profile-form-section">
+                <div class="profile-form-heading">
+                    <h2>Profile photo</h2>
+                    <p>Choose an image that represents you.</p>
+                </div>
+                {{ profile_form|crispy }}
+            </div>
+            <button type="submit" class="btn dashboard-primary-btn profile-save-btn"><i class="fa fa-check"></i> Save changes</button>
+        </form>
+    </main>
+</div>
+{% endblock %}
