@@ -14,7 +14,9 @@
   <thead>
     <tr>
       <th >#</th>
+      {% if request.user.is_superuser %}
       <th>Full Name</th>
+      {% endif %}
       <th>Username</th>
       <th>Email</th>
       <th>Staff</th>
@@ -28,7 +30,9 @@
     {% for user in users %}
     <tr>
       <th >{{forloop.counter}}</th>
+      {% if request.user.is_superuser %}
       <td>{{user.first_name}} {{user.last_name}}</td>
+      {% endif %}
       <td>{{ user.username }}</td>
       <td>{{ user.email|default:'—' }}</td>
       <td>{% if user.is_staff %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</td>
