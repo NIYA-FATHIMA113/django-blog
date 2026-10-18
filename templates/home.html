@@ -139,6 +139,16 @@
 
         <!-- Sidebar -->
         <aside class="col-lg-4 blog-sidebar">
+            {% if about %}
+            <div class="sidebar-widget" data-aos="fade-left" data-aos-delay="200">
+                <div class="sidebar-widget-header">
+                    <i class="bi bi-info-circle"></i>
+                    <h4>{{ about.about_heading }}</h4>
+                </div>
+                <p class="sidebar-widget-text">{{ about.about_description }}</p>
+            </div>
+            {% endif %}
+
             <div class="sidebar-widget" data-aos="fade-left" data-aos-delay="250">
                 <div class="sidebar-widget-header">
                     <i class="bi bi-tags"></i>
@@ -158,6 +168,24 @@
                 </ul>
             </div>
 
+            {% if social_links %}
+            <div class="sidebar-widget" data-aos="fade-left" data-aos-delay="300">
+                <div class="sidebar-widget-header">
+                    <i class="bi bi-share"></i>
+                    <h4>Follow Us</h4>
+                </div>
+                <ul class="sidebar-social-list">
+                    {% for i in social_links %}
+                    <li>
+                        <a href="{{ i.link }}" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-link-45deg"></i>
+                            {{ i.platform }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
         </aside>
     </div>
 </section>

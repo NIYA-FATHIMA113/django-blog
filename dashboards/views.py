@@ -1,33 +1,28 @@
-from unicodedata import category
-from webbrowser import get
 from django.utils.text import slugify
 
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template import context
 
 from blogs.models import Blog, Category
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-
-from dashboards.forms import AddUserForm, CategoryForm, BlogPostForm, EditUserForm, ProfileForm, ProfileUserForm
-from assignments.models import Profile
+from dashboards.forms import AddUserForm, CategoryForm,BlogPostForm, EditUserForm
 
 
-def require_staff(user):
-    if not user.is_authenticated or not user.is_staff:
-        raise PermissionDenied
+def staff_required(view_func):
+    """Require an authenticated staff member for dashboard administration."""
+    return login_required(
+        user_passes_test(lambda user: user.is_staff, login_url='login')(view_func),
+        login_url='login',
+    )
 
 
-def require_authenticated(user):
-    if not user.is_authenticated:
-        raise PermissionDenied
-
-
-def require_superuser(user):
-    if not user.is_authenticated or not (user.is_superuser or user.groups.filter(name='Manager').exists()):
-        raise PermissionDenied
+def superuser_required(view_func):
+    """Restrict user administration to superusers."""
+    return login_required(
+        user_passes_test(lambda user: user.is_superuser, login_url='login')(view_func),
+        login_url='login',
+    )
 
 
 def unique_blog_slug(title, post_id=None):
@@ -47,9 +42,8 @@ def unique_blog_slug(title, post_id=None):
 # Create your views here.
 @login_required(login_url='login')
 def dashboard(request):
-    require_authenticated(request.user)
-    category_count=Category.objects.all().count() if request.user.is_staff else 0
-    blogs_count=Blog.objects.count() if request.user.is_staff else Blog.objects.filter(author=request.user).count()
+    category_count=Category.objects.all().count()
+    blogs_count=Blog.objects.all().count()
     context={
         'category_count':category_count,
         'blogs_count':blogs_count
@@ -57,44 +51,25 @@ def dashboard(request):
     return render(request,'dashboard/dashboard.html',context)
 
 
-@login_required(login_url='login')
-def profile(request):
-    user_profile, _ = Profile.objects.get_or_create(user=request.user)
-    if request.method == 'POST':
-        user_form = ProfileUserForm(request.POST, instance=request.user)
-        profile_form = ProfileForm(request.POST, request.FILES, instance=user_profile)
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            return redirect('profile')
-    else:
-        user_form = ProfileUserForm(instance=request.user)
-        profile_form = ProfileForm(instance=user_profile)
-    return render(request, 'dashboard/profile.html', {
-        'user_form': user_form,
-        'profile_form': profile_form,
-        'profile_user': request.user,
-    })
-
-
+@staff_required
 def categories(request):
-    require_staff(request.user)
     return render(request,'dashboard/categories.html')
+@staff_required
 def add_category(request):
-    require_staff(request.user)
     if request.method=='POST':
         form=CategoryForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('categories')
-    form=CategoryForm()
+    else:
+        form=CategoryForm()
     context={
         'form':form
     }
     return render(request,'dashboard/add_category.html',context)
 
+@staff_required
 def edit_category(request,pk):
-    require_staff(request.user)
     category=get_object_or_404(Category,pk=pk)
     if request.method=='POST':
         form=CategoryForm(request.POST,instance=category)
@@ -102,32 +77,33 @@ def edit_category(request,pk):
             form.save()
             return redirect('categories')
         
-    form=CategoryForm(instance=category)
+    else:
+        form=CategoryForm(instance=category)
     context={
         'form':form,
         'category':category
     }
     return render(request,'dashboard/edit_category.html',context)
 
+@staff_required
 def delete_category(request,pk):
-    require_staff(request.user)
     category=get_object_or_404(Category,pk=pk)
     category.delete()
     return redirect('categories')
 
 
 
+@login_required(login_url='login')
 def posts(request):
-    require_authenticated(request.user)
-    posts=Blog.objects.all() if request.user.is_staff else Blog.objects.filter(author=request.user)
+    posts = Blog.objects.all() if request.user.is_staff else Blog.objects.filter(author=request.user)
     context={
         'posts':posts
     }
     return render(request,'dashboard/posts.html',context)
 
 
+@login_required(login_url='login')
 def add_post(request):
-    require_authenticated(request.user)
     if request.method=='POST':
         form=BlogPostForm(request.POST,request.FILES)
         if form.is_valid():
@@ -139,15 +115,16 @@ def add_post(request):
         
             
 
-    form=BlogPostForm()
+    else:
+        form=BlogPostForm()
     context={
         'form':form
     }
     return render(request,'dashboard/add_post.html',context)
 
+@login_required(login_url='login')
 def edit_post(request, pk):
     post = get_object_or_404(Blog, pk=pk)
-    require_authenticated(request.user)
     if not request.user.is_staff and post.author != request.user:
         raise PermissionDenied
 
@@ -159,8 +136,6 @@ def edit_post(request, pk):
             post.slug = unique_blog_slug(form.cleaned_data['title'], post.id)
             post.save()
             return redirect('posts')
-        else:
-            print(form.errors)   # <-- Add this
 
     else:
         form = BlogPostForm(instance=post)
@@ -171,8 +146,8 @@ def edit_post(request, pk):
     })
 
 
+@login_required(login_url='login')
 def delete_post(request,pk):
-    require_authenticated(request.user)
     post=get_object_or_404(Blog,pk=pk)
     if not request.user.is_staff and post.author != request.user:
         raise PermissionDenied
@@ -180,9 +155,8 @@ def delete_post(request,pk):
     return redirect('posts')
 
 
-@login_required(login_url='login')
+@superuser_required
 def users(request):
-    require_superuser(request.user)
     users=User.objects.all()
     context={
         'users':users,
@@ -191,15 +165,13 @@ def users(request):
 
 
 
+@superuser_required
 def add_user(request):
-    require_superuser(request.user)
     if request.method=='POST':
         form=AddUserForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('users')
-        else:
-            print(form.errors)
     else:
         form=AddUserForm()
     
@@ -209,23 +181,24 @@ def add_user(request):
     return render(request,'dashboard/add_user.html',context)
 
 
+@superuser_required
 def edit_user(request,pk):
-    require_superuser(request.user)
     user=get_object_or_404(User,pk=pk)
     if request.method=='POST':
         form=EditUserForm(request.POST,instance=user)
         if form.is_valid():
             form.save()
             return redirect('users')
-    form=EditUserForm(instance=user)
+    else:
+        form=EditUserForm(instance=user)
     context={
         'form':form
     }
 
     return render(request,'dashboard/edit_user.html',context)
 
+@superuser_required
 def delete_user(request,pk):
-    require_superuser(request.user)
     user=get_object_or_404(User,pk=pk)
     user.delete()
     return redirect('users')

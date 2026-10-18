@@ -1,5 +1,4 @@
 
-{% if user.is_authenticated %}
 <aside class="col-lg-3 dashboard-sidebar-wrap">
     <nav class="dashboard-sidebar" aria-label="Dashboard navigation">
         <div class="dashboard-sidebar-brand">
@@ -10,19 +9,14 @@
         <a href="{% url 'dashboard' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'dashboard' %}is-active{% endif %}">
             <i class="fa fa-home"></i><span>Overview</span>
         </a>
-        <a href="{% url 'profile' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'profile' %}is-active{% endif %}">
-            <i class="fa fa-user"></i><span>Profile</span>
-        </a>
         {% if perms.auth.view_user %}
         <a href="{% url 'users' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'users' %}is-active{% endif %}">
             <i class="fa fa-users"></i><span>Users</span>
         </a>
         {% endif %}
-        {% if user.is_staff %}
         <a href="{% url 'categories' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'categories' %}is-active{% endif %}">
             <i class="fa fa-folder-o"></i><span>Categories</span>
         </a>
-        {% endif %}
         <a href="{% url 'posts' %}" class="dashboard-nav-link {% if request.resolver_match.url_name == 'posts' %}is-active{% endif %}">
             <i class="fa fa-file-text-o"></i><span>Posts</span>
         </a>
@@ -31,4 +25,3 @@
         </div>
     </nav>
 </aside>
-{% endif %}

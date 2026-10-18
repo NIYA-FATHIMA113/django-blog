@@ -95,7 +95,7 @@
                     </a>
 
 
-                {% elif user.is_authenticated %}
+                {% else %}
 
 
                     <span>
@@ -112,14 +112,6 @@
                         </a>
                     </span>
 
-
-                {% else %}
-
-                    <span>
-                        <a href="{% url 'logout' %}">
-                            Logout
-                        </a>
-                    </span>
 
                 {% endif %}
 
@@ -171,6 +163,66 @@
 <!-- Footer -->
 
 <footer class="blog-footer">
+
+
+    <p>
+        Django Blog built with  by
+        <a href="#">
+            Niya Fathima
+        </a>
+    </p>
+
+
+
+    <!-- Social Links -->
+
+    <div class="social-links mt-3">
+
+
+        {% for social in social_links %}
+
+
+            <a href="{{ social.link }}"
+               target="_blank"
+               class="btn btn-outline-dark mx-1">
+
+
+                {% if social.platform|lower == "linkedin" %}
+
+                    <i class="fa fa-linkedin"></i>
+
+
+                {% elif social.platform|lower == "github" %}
+
+                    <i class="fa fa-github"></i>
+
+
+                {% else %}
+
+                    <i class="fa fa-link"></i>
+
+                {% endif %}
+
+
+                {{ social.platform }}
+
+
+            </a>
+
+
+        {% empty %}
+
+
+            <p>
+                Add social links from admin panel.
+            </p>
+
+
+        {% endfor %}
+
+
+    </div>
+
 
     <p class="mt-3">
         © {{ now.year }} Django Blog
